@@ -1,28 +1,37 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
+import amplifyApi from "../API/AmplifyApi";
 
-export default function Signup() {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const signup = async () => {
-    await Auth.signIn(email, password).then((res) => {
-      console.log(res);
+import { AppForm } from "../components/AppForm";
+
+export default function Signup(props) {
+  const [loading, setLoading] = useState(false);
+
+  const onSignUp = () => {};
+  const singUp = async () => {
+    setLoading(true);
+    await amplifyApi.singUp(email, password, props.onSignUp, (e) => {
+      console.error(e);
     });
   };
+
   return (
     <View style={styles.container}>
-      <Text>Email</Text>
-      <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        onChangeText={setEmail}
-      />
-      <Text>Password</Text>
-      <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        onChangeText={setPassword}
-      />
-
-      <Button title={"Signup"} onPress={signup} />
+      <Image style={styles.logo} source={require("../../images/Logo.png")} />
+      <View style={styles.innerContainer}>
+        <AppForm
+          inputsToRender={{
+            email: true,
+            fullName: true,
+            password: true,
+          }}
+          isLoading={loading}
+          submitButtonText="Create Account"
+          onSubmit={(data) => {
+            console.log(data);
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -30,8 +39,19 @@ export default function Signup() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#EAEAEA",
+    paddingTop: 20,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  innerContainer: {
+    width: 225,
     alignItems: "center",
     justifyContent: "center",
+  },
+  logo: {
+    width: 300,
+    height: 300,
+    marginBottom: 20,
   },
 });

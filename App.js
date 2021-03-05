@@ -1,12 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
-import Amplify, { Auth, Cache } from "aws-amplify";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
-import axios from "axios";
-import Signup from "./src/Pages/Singup";
 import Login from "./src/Pages/Login";
+import Loading from "./src/Pages/Loading";
 import Home from "./src/Pages/Home";
+import Welcome from "./src/Pages/Welcome";
+import amplifyApi from "./src/API/AmplifyApi";
+import Signup from "./src/Pages/Singup";
 Amplify.configure(awsconfig);
 
 export default function App() {
@@ -14,45 +18,61 @@ export default function App() {
   const [user, setUser] = useState(undefined);
 
   const checkIfLoggedIn = async () => {
-    Auth.currentAuthenticatedUser()
-      .then((user) => {
-        const data = JSON.stringify({
-          token: user.signInUserSession.idToken.jwtToken,
-        });
-        const headers = {
-          "Content-Type": "application/json",
-        };
-        axios
-          .post("http://localhost:5000/user/verify", data, {
-            headers,
-          })
-          .then((res) => {
-            setUser(res.data);
-            setLoading(false);
-          });
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+    const onSuccess = (user) => {
+      setUser(user);
+      setLoading(false);
+    };
+    const onFail = () => setLoading(false);
+    await amplifyApi.checkIfLoggedIn(onSuccess, onFail);
   };
+
+  const onAuthenticate = (user) => {
+    setUser(user);
+  };
+
   useEffect(() => {
     checkIfLoggedIn();
   }, [loading]);
-  const ifLoading = (
-    <View>
-      <Text>Loading</Text>
-    </View>
-  );
-  const home = <Home user={user} />;
-  const signUp = <Login />;
-  return loading ? ifLoading : user ? home : signUp;
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+  if (loading) {
+    return <Loading />;
+  }
+
+  const defaultOptions = {
+    title: "",
+    headerTransparent: true,
+  };
+
+  const Stack = createStackNavigator();
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <Stack.Screen name="Home" component={Home} />
+        ) : (
+          <>
+            <Stack.Screen
+              name="Welcome"
+              onLogin={onAuthenticate}
+              options={defaultOptions}
+              component={Welcome}
+            />
+            <Stack.Screen
+              name="Login"
+              onLogin={onAuthenticate}
+              options={defaultOptions}
+              component={Login}
+            />
+            <Stack.Screen
+              name="Signup"
+              onSignUp={onAuthenticate}
+              component={Signup}
+              options={defaultOptions}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
