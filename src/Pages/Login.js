@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, Button } from "react-native";
+import { StyleSheet, View, Image, Platform } from "react-native";
 import amplifyApi from "../API/AmplifyApi";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AppForm } from "../components/AppForm";
@@ -8,15 +8,15 @@ import IMAGES from "../../images";
 import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
 import COLORS from "../config/Colors";
 import { AppAlert } from "../components/AppAlert";
-import Toast from "react-native-simple-toast";
+
+let Toast;
+if (Platform.OS !== "web") {
+  Toast = require("react-native-simple-toast").default;
+}
 
 export default function Login(props) {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({
-    show: true,
-    title: "HU",
-    message: "DWADW",
-  });
+  const [alert, setAlert] = useState({});
   const { setUser, user } = useContext(UserContext);
 
   const onLogin = async (formData) => {

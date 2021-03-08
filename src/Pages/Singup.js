@@ -1,15 +1,18 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, Image, Platform } from "react-native";
 import amplifyApi from "../API/AmplifyApi";
 import { StackActions } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import AwesomeAlert from "react-native-awesome-alerts";
 import { AppForm } from "../components/AppForm";
 import UserContext from "../contexts/user";
 import IMAGES from "../../images";
 import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
 import COLORS from "../config/Colors";
-import Toast from "react-native-simple-toast";
+
+let Toast;
+if (Platform.OS !== "web") {
+  Toast = require("react-native-simple-toast").default;
+}
 
 export default function Signup(props) {
   const [loading, setLoading] = useState(false);

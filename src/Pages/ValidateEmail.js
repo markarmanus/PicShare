@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, Text } from "react-native";
+import { StyleSheet, View, Image, Text, Platform } from "react-native";
 import amplifyApi from "../API/AmplifyApi";
 
 import { AppButton } from "../components/AppButton";
@@ -7,8 +7,12 @@ import { AppTextInput } from "../components/AppTextInput";
 import { StackActions } from "@react-navigation/native";
 import UserContext from "../contexts/user";
 import COLORS from "../config/Colors";
-import Toast from "react-native-simple-toast";
 import IMAGES from "../../images";
+
+let Toast;
+if (Platform.OS !== "web") {
+  Toast = require("react-native-simple-toast").default;
+}
 
 export default function ValidateEmail(props) {
   const [loading, setLoading] = useState(false);
