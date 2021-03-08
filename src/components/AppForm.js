@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import { AppButton } from "./AppButton";
 import { AppTextInput } from "./AppTextInput";
 
@@ -8,11 +8,12 @@ export const AppForm = ({
   isLoading,
   submitButtonText,
   validateLoginOnly,
+  defaultValues,
   onSubmit,
 }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(defaultValues.email || "");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [fullName, setFullName] = useState(defaultValues.fullName || "");
   const [emailValid, setEmailValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   const [fullNameValid, setFullNameValid] = useState(false);
@@ -21,7 +22,13 @@ export const AppForm = ({
   const [passwordError, setPasswordError] = useState("");
   const [passwordWarning, setPasswordWarning] = useState("");
 
-  const validateEmail = (email) => {
+  useEffect(() => {
+    if (defaultValues.email) validateEmail();
+    if (defaultValues.password) validatePassword();
+    if (defaultValues.fullName) validateFullName();
+  }, []);
+
+  const validateEmail = () => {
     const regTest = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (email && regTest.test(email.toLowerCase())) {
       setEmailValid(true);
@@ -32,7 +39,7 @@ export const AppForm = ({
     }
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = () => {
     const hasLowerCase = new RegExp("^(?=.*[a-z])");
     const hasUpperCase = new RegExp("^(?=.*[A-Z])");
     const hasNumber = new RegExp("^(?=.*[0-9])");
@@ -59,7 +66,7 @@ export const AppForm = ({
       setPasswordError("Password Not Long Enough!");
     }
   };
-  const validateFullName = (fullName) => {
+  const validateFullName = () => {
     const isValid = fullName && fullName.length > 0;
     if (isValid) {
       setFullNameValid(true);
@@ -87,8 +94,9 @@ export const AppForm = ({
           placeholder="Full Name"
           error={fullNameError}
           onChangeText={setFullName}
+          defaultValue={defaultValues.fullName}
           onBlur={() => {
-            if (!validateLoginOnly) validateFullName(fullName);
+            if (!validateLoginOnly) validateFullName();
           }}
         />
       ) : null}
@@ -97,25 +105,28 @@ export const AppForm = ({
           placeholder="Email"
           error={emailError}
           onChangeText={setEmail}
-          onBlur={() => validateEmail(email)}
+          defaultValue={defaultValues.email}
+          onBlur={() => validateEmail()}
         />
       ) : null}
       {inputsToRender.password ? (
         <AppTextInput
-          error={"Hello"}
           placeholder="Password"
           error={passwordError}
           warning={passwordWarning}
+          secureTextEntry={true}
           onChangeText={(password) => {
             setPassword(password);
-            if (!validateLoginOnly) validatePassword(password);
+            if (!validateLoginOnly) validatePassword();
           }}
         />
       ) : null}
 
       <AppButton
         containerStyle={styles.buttonContainer}
-        onPress={() => onSubmit({ email, password, fullName })}
+        onPress={() => {
+          if (!isLoading) onSubmit({ email, password, fullName });
+        }}
         disabled={!canContinue}
         isLoading={isLoading}
         title={submitButtonText}
@@ -125,9 +136,7 @@ export const AppForm = ({
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     width: "100%",
-    height: 500,
     alignItems: "center",
   },
   buttonContainer: {

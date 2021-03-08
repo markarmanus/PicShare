@@ -12,7 +12,7 @@ const verifyUser = async (user, onSuccess, onFail) => {
     axios
       .post(`${API_CONFIG.URL}/user/verify`, data, { headers })
       .then((res) => {
-        onSuccess(res.data);
+        onSuccess(user);
       });
   } catch (e) {
     onFail(e);

@@ -9,22 +9,27 @@ export const AppTextInput = ({
   onBlur,
   error,
   warning,
+  defaultValue,
+  ...props
 }) => (
   <View style={[styles.container, containerStyle]}>
     <TextInput
       placeholder={placeholder}
       style={[styles.textInput, textInputStyle]}
+      defaultValue={defaultValue}
       onChangeText={onChangeText}
       onBlur={onBlur}
+      {...props}
     />
-    <Text style={styles.error}>{error}</Text>
-    <Text style={styles.warning}>{warning}</Text>
+    {error ? <Text style={styles.error}>{error}</Text> : null}
+    {warning && !error ? <Text style={styles.warning}>{warning}</Text> : null}
   </View>
 );
 const styles = StyleSheet.create({
   textInput: {
     width: "100%",
     borderBottomWidth: 1,
+    height: 30,
     borderBottomColor: "rgba(0, 0, 0, 0.3)",
   },
   container: {

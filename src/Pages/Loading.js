@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 
 export default function Home({ user }) {
-  console.log(user);
   return (
     <View>
       <Text>Loading</Text>

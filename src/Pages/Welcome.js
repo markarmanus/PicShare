@@ -1,26 +1,23 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { AppButton } from "../components/AppButton";
+import IMAGES from "../../images";
 
 export default function Welcome(props) {
-  props.navigation.setOptions({
-    headerShown: true,
-    headerTransparent: true,
-  });
+  const onSignUp = () => {
+    props.navigation.navigate("Signup");
+  };
+  const onLogin = () => {
+    props.navigation.navigate("Login");
+  };
 
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={require("../../images/Logo.png")} />
+      <Image style={styles.logo} source={IMAGES.LOGO} />
       <Text style={styles.text}>WELCOME TO PicSHARE</Text>
       <View style={styles.buttonContainer}>
-        <AppButton
-          onPress={() => props.navigation.navigate("Signup")}
-          title="Im New Here!"
-        />
-        <AppButton
-          onPress={() => props.navigation.navigate("Login")}
-          title="Login"
-        />
+        <AppButton onPress={onSignUp} title="Im New Here!" />
+        <AppButton onPress={onLogin} title="Login" />
       </View>
     </View>
   );

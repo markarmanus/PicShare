@@ -1,8 +1,8 @@
 import { Auth } from "aws-amplify";
-
 import picShareApi from "./PicShareApi";
+
 const checkIfLoggedIn = async (onSuccess, onFail) => {
-  Auth.currentAuthenticatedUser()
+  await Auth.currentAuthenticatedUser()
     .then((user) => {
       picShareApi.verifyUser(user, onSuccess, onFail);
     })
@@ -12,7 +12,7 @@ const checkIfLoggedIn = async (onSuccess, onFail) => {
 };
 
 const signIn = async (email, password, onSuccess, onFail) => {
-  Auth.signIn(email, password)
+  await Auth.signIn(email, password)
     .then((user) => {
       picShareApi.verifyUser(user, onSuccess, onFail);
     })
@@ -21,9 +21,29 @@ const signIn = async (email, password, onSuccess, onFail) => {
     });
 };
 
-const singUp = async (email, password, onSuccess, onFail) => {
-  Auth.signUp(email, password).then(onSuccess).catch(onFail);
+const resendConfirmationCode = async (email, onSuccess, onFail) => {
+  await Auth.resendSignUp(email).then(onSuccess).catch(onFail);
+};
+const singUp = async (email, password, attributes = {}, onSuccess, onFail) => {
+  Auth.signUp({ username: email, password, attributes })
+    .then(onSuccess)
+    .catch(onFail);
 };
 
-const amplifyApi = { checkIfLoggedIn, signIn, singUp };
+const validateEmail = async (email, code, onSuccess, onFail) => {
+  await Auth.confirmSignUp(email, code).then(onSuccess).catch(onFail);
+};
+
+const singOut = async (onSuccess, onFail) => {
+  await Auth.signOut().then(onSuccess).catch(onFail);
+};
+
+const amplifyApi = {
+  checkIfLoggedIn,
+  signIn,
+  singUp,
+  validateEmail,
+  resendConfirmationCode,
+  singOut,
+};
 export default amplifyApi;

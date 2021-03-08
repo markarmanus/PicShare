@@ -1,36 +1,94 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Image } from "react-native";
+import React, { useState, useContext } from "react";
+import { StyleSheet, View, Image, KeyboardAvoidingView } from "react-native";
 import amplifyApi from "../API/AmplifyApi";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AwesomeAlert from "react-native-awesome-alerts";
 import { AppForm } from "../components/AppForm";
+import UserContext from "../contexts/user";
+import IMAGES from "../../images";
+import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
 
 export default function Login(props) {
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({});
+  const { setUser, user } = useContext(UserContext);
 
-  const login = async () => {
-    await amplifyApi.signIn(email, password, props.onLogin, (e) => {
-      console.error(e);
-    });
+  const onLogin = async (formData) => {
+    setLoading(true);
+    const { email, password } = formData;
+    const onLoginSuccess = () => {
+      props.navigation.popToTop();
+    };
+    const onLoginFail = (error) => {
+      if (error.name === AMPLIFY_ERRORS.USER_NOT_CONFIRMED) {
+        const alert = {
+          show: true,
+          title: "Email Verification!",
+          message: "You Need to verify your email",
+          confirmText: "Verify",
+          confirmButtonColor: "green",
+          confirmPress: () => {
+            amplifyApi.resendConfirmationCode(email);
+            props.navigation.navigate("ValidateEmail");
+            setAlert({ show: false });
+          },
+        };
+        setAlert(alert);
+      } else if (error.name === AMPLIFY_ERRORS.USER_NOT_AUTHORIZED) {
+        const alert = {
+          show: true,
+          title: "Could not Login",
+          message: "Email or password is incorrect!",
+          confirmText: "Okay",
+          confirmButtonColor: "red",
+          confirmPress: () => setAlert({ show: false }),
+        };
+        setAlert(alert);
+      }
+    };
+    await amplifyApi.signIn(email, password, onLoginSuccess, onLoginFail);
+    setUser({ email });
+    setLoading(false);
   };
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.logo} source={require("../../images/Logo.png")} />
-      <View style={styles.innerContainer}>
-        <AppForm
-          inputsToRender={{
-            email: true,
-            fullName: false,
-            password: true,
-          }}
-          validateLoginOnly={true}
-          isLoading={loading}
-          submitButtonText="Login"
-          onSubmit={(data) => {
-            console.log(data);
-          }}
-        />
+    <KeyboardAwareScrollView
+      enableOnAndroid={true}
+      extraScrollHeight={100}
+      style={styles.keyboardAvoiding}
+    >
+      <View style={styles.container}>
+        <Image style={styles.logo} source={IMAGES.LOGO} />
+        <View style={styles.innerContainer}>
+          <AppForm
+            inputsToRender={{
+              email: true,
+              fullName: false,
+              password: true,
+            }}
+            validateLoginOnly={true}
+            defaultValues={{
+              email: user?.email,
+            }}
+            isLoading={loading}
+            submitButtonText="Login"
+            onSubmit={onLogin}
+          />
+          <AwesomeAlert
+            show={alert.show}
+            showProgress={false}
+            title={alert.title}
+            message={alert.message}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showConfirmButton={true}
+            confirmText={alert.confirmText}
+            confirmButtonColor={alert.confirmButtonColor}
+            onConfirmPressed={alert.confirmPress}
+          />
+        </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -38,18 +96,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EAEAEA",
-    paddingTop: 20,
+    paddingTop: 15,
     alignItems: "center",
     justifyContent: "flex-start",
   },
   innerContainer: {
     width: 225,
     alignItems: "center",
+    marginTop: 25,
     justifyContent: "center",
   },
   logo: {
     width: 300,
     height: 300,
-    marginBottom: 20,
+  },
+  keyboardAvoiding: {
+    backgroundColor: "#EAEAEA",
   },
 });
