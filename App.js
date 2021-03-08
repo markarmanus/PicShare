@@ -12,6 +12,7 @@ import Signup from "./src/Pages/Singup";
 import ValidateEmail from "./src/Pages/ValidateEmail";
 import UserContext from "./src/contexts/user";
 import transformers from "./src/helpers/transformers";
+
 Amplify.configure(awsconfig);
 
 export default function App() {

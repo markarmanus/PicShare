@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import COLORS from "../config/Colors";
 
 export const AppButton = ({
   onPress,
@@ -29,7 +30,7 @@ export const AppButton = ({
         <ActivityIndicator
           style={styles.loadingIndicator}
           size="small"
-          color="white"
+          color={COLORS.default.lightFont}
         />
       ) : null}
     </TouchableOpacity>
@@ -37,7 +38,7 @@ export const AppButton = ({
 };
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#183642",
+    backgroundColor: COLORS.default.mainColor,
     margin: 10,
     width: "100%",
     height: 40,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 13,
-    color: "#fff",
+    color: COLORS.default.lightFont,
     fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",

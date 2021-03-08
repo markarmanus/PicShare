@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, TextInput, View, Text } from "react-native";
+import COLORS from "../config/Colors";
 
 export const AppTextInput = ({
   onChangeText,
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderBottomWidth: 1,
     height: 30,
-    borderBottomColor: "rgba(0, 0, 0, 0.3)",
+    borderBottomColor: COLORS.default.lightGray,
   },
   container: {
     width: "100%",
@@ -42,11 +43,11 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 13,
     marginTop: 2,
-    color: "#ff0033",
+    color: COLORS.default.error,
   },
   warning: {
     fontSize: 13,
     marginTop: 2,
-    color: "#ffae42",
+    color: COLORS.default.warning,
   },
 });

@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator, Image } from "react-native";
+import IMAGES from "../../images";
+import COLORS from "../config/Colors";
 
 export default function Home({ user }) {
   return (
-    <View>
-      <Text>Loading</Text>
+    <View style={styles.container}>
+      <Image style={styles.logo} source={IMAGES.LOGO} />
+      <View style={styles.loadingIndicator}>
+        <ActivityIndicator color={COLORS.default.mainColor} />
+      </View>
     </View>
   );
 }
@@ -12,8 +17,18 @@ export default function Home({ user }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.default.background,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    paddingTop: 150,
+  },
+  logo: {
+    width: 300,
+    height: 300,
+  },
+  loadingIndicator: {
+    width: "10%",
+    height: "10%",
+    alignSelf: "center",
   },
 });

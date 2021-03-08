@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import { AppButton } from "../components/AppButton";
 import amplifyApi from "../API/AmplifyApi";
 import UserContext from "../contexts/user";
+import COLORS from "../config/Colors";
 export default class Home extends React.Component {
   static contextType = UserContext;
   onLogout = () => {
@@ -39,7 +40,7 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.default.background,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -8,6 +8,8 @@ import { AppForm } from "../components/AppForm";
 import UserContext from "../contexts/user";
 import IMAGES from "../../images";
 import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
+import COLORS from "../config/Colors";
+import Toast from "react-native-simple-toast";
 
 export default function Signup(props) {
   const [loading, setLoading] = useState(false);
@@ -27,29 +29,9 @@ export default function Signup(props) {
     };
     const onSingUpFail = (error) => {
       if (error.name === AMPLIFY_ERRORS.EMAIL_EXISTS) {
-        const alert = {
-          show: true,
-          title: "Email Already Exists!",
-          message: "Try Logging in with this email",
-          confirmText: "Okay",
-          confirmButtonColor: "red",
-          confirmPress: () => {
-            setAlert({ show: false });
-          },
-        };
-        setAlert(alert);
+        Toast.show("Email Already Exists!");
       } else {
-        const alert = {
-          show: true,
-          title: "Something Went Wrong!",
-          message: "Try using a different email or password.",
-          confirmText: "Okay",
-          confirmButtonColor: "red",
-          confirmPress: () => {
-            setAlert({ show: false });
-          },
-        };
-        setAlert(alert);
+        Toast.show("Could Not Login, SomeThing Went Wrong!");
       }
     };
     await amplifyApi.singUp(
@@ -85,18 +67,6 @@ export default function Signup(props) {
             submitButtonText="Create Account"
             onSubmit={singUp}
           />
-          <AwesomeAlert
-            show={alert.show}
-            showProgress={false}
-            title={alert.title}
-            message={alert.message}
-            closeOnTouchOutside={true}
-            closeOnHardwareBackPress={false}
-            showConfirmButton={true}
-            confirmText={alert.confirmText}
-            confirmButtonColor={alert.confirmButtonColor}
-            onConfirmPressed={alert.confirmPress}
-          />
         </View>
       </View>
     </KeyboardAwareScrollView>
@@ -106,7 +76,7 @@ export default function Signup(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EAEAEA",
+    backgroundColor: COLORS.default.background,
     paddingTop: 20,
     alignItems: "center",
     justifyContent: "flex-start",
@@ -122,6 +92,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   keyboardAvoiding: {
-    backgroundColor: "#EAEAEA",
+    backgroundColor: COLORS.default.background,
   },
 });

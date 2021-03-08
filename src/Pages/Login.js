@@ -1,24 +1,32 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, Image, Button } from "react-native";
 import amplifyApi from "../API/AmplifyApi";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import AwesomeAlert from "react-native-awesome-alerts";
 import { AppForm } from "../components/AppForm";
 import UserContext from "../contexts/user";
 import IMAGES from "../../images";
 import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
+import COLORS from "../config/Colors";
+import { AppAlert } from "../components/AppAlert";
+import Toast from "react-native-simple-toast";
 
 export default function Login(props) {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({});
+  const [alert, setAlert] = useState({
+    show: true,
+    title: "HU",
+    message: "DWADW",
+  });
   const { setUser, user } = useContext(UserContext);
 
   const onLogin = async (formData) => {
     setLoading(true);
+
     const { email, password } = formData;
     const onLoginSuccess = () => {
       props.navigation.popToTop();
     };
+
     const onLoginFail = (error) => {
       if (error.name === AMPLIFY_ERRORS.USER_NOT_CONFIRMED) {
         const alert = {
@@ -26,7 +34,7 @@ export default function Login(props) {
           title: "Email Verification!",
           message: "You Need to verify your email",
           confirmText: "Verify",
-          confirmButtonColor: "green",
+          type: "success",
           confirmPress: () => {
             amplifyApi.resendConfirmationCode(email);
             props.navigation.navigate("ValidateEmail");
@@ -35,15 +43,7 @@ export default function Login(props) {
         };
         setAlert(alert);
       } else if (error.name === AMPLIFY_ERRORS.USER_NOT_AUTHORIZED) {
-        const alert = {
-          show: true,
-          title: "Could not Login",
-          message: "Email or password is incorrect!",
-          confirmText: "Okay",
-          confirmButtonColor: "red",
-          confirmPress: () => setAlert({ show: false }),
-        };
-        setAlert(alert);
+        Toast.show("The Email or password are incorrect!");
       }
     };
     await amplifyApi.signIn(email, password, onLoginSuccess, onLoginFail);
@@ -74,18 +74,7 @@ export default function Login(props) {
             submitButtonText="Login"
             onSubmit={onLogin}
           />
-          <AwesomeAlert
-            show={alert.show}
-            showProgress={false}
-            title={alert.title}
-            message={alert.message}
-            closeOnTouchOutside={true}
-            closeOnHardwareBackPress={false}
-            showConfirmButton={true}
-            confirmText={alert.confirmText}
-            confirmButtonColor={alert.confirmButtonColor}
-            onConfirmPressed={alert.confirmPress}
-          />
+          <AppAlert alert={alert} />
         </View>
       </View>
     </KeyboardAwareScrollView>
@@ -95,7 +84,7 @@ export default function Login(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EAEAEA",
+    backgroundColor: COLORS.default.background,
     paddingTop: 15,
     alignItems: "center",
     justifyContent: "flex-start",
@@ -111,6 +100,6 @@ const styles = StyleSheet.create({
     height: 300,
   },
   keyboardAvoiding: {
-    backgroundColor: "#EAEAEA",
+    backgroundColor: COLORS.default.background,
   },
 });

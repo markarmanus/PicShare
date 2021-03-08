@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { AppButton } from "../components/AppButton";
 import IMAGES from "../../images";
+import COLORS from "../config/Colors";
 
 export default function Welcome(props) {
   const onSignUp = () => {
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-    color: "#183642",
+    color: COLORS.default.mainColor,
     fontWeight: "bold",
     alignSelf: "center",
     marginTop: 10,

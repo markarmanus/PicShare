@@ -4,9 +4,11 @@ import amplifyApi from "../API/AmplifyApi";
 
 import { AppButton } from "../components/AppButton";
 import { AppTextInput } from "../components/AppTextInput";
-import { Link, StackActions } from "@react-navigation/native";
+import { StackActions } from "@react-navigation/native";
 import UserContext from "../contexts/user";
-import transformers from "../helpers/transformers";
+import COLORS from "../config/Colors";
+import Toast from "react-native-simple-toast";
+import IMAGES from "../../images";
 
 export default function ValidateEmail(props) {
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export default function ValidateEmail(props) {
   const validateEmail = async () => {
     setLoading(true);
     await amplifyApi.validateEmail(
-      user.email ? user.email : "",
+      user.email || "",
       validationCode,
       () => {
         setLoading(false);
@@ -24,7 +26,7 @@ export default function ValidateEmail(props) {
           ...user,
           emailValidated: true,
         });
-        alert("Email Validated Successfully. Now Lets Login!");
+        Toast.show("Email Validated Successfully. Now Lets Login!");
         props.navigation.dispatch(StackActions.replace("Login"));
       },
       (e) => {
@@ -33,15 +35,27 @@ export default function ValidateEmail(props) {
       }
     );
   };
+  const resendCode = () => {
+    if (user?.email)
+      amplifyApi.resendConfirmationCode(
+        user.email,
+        () => {
+          Toast.show("Email Sent!");
+        },
+        (e) => {
+          console.log(e);
+        }
+      );
+  };
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={require("../../images/Logo.png")} />
+      <Image style={styles.logo} source={IMAGES.LOGO} />
 
       <View style={styles.innerContainer}>
         <Text style={styles.explainText}>
           We've sent an email with your code to
         </Text>
-        <Text>{user.email ? user.email : "CouldNotGetEmail"}</Text>
+        <Text>{user.email || "CouldNotGetEmail"}</Text>
 
         <AppTextInput
           placeholder="Validation Code"
@@ -55,7 +69,10 @@ export default function ValidateEmail(props) {
           title={"Verify"}
         />
         <Text style={styles.explainText}>
-          Did not Recieve email? <Link style={styles.link}>Resend</Link>
+          Did not Receive email?{" "}
+          <Text style={styles.link} onPress={resendCode}>
+            Resend
+          </Text>
         </Text>
       </View>
     </View>
@@ -65,7 +82,7 @@ export default function ValidateEmail(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EAEAEA",
+    backgroundColor: COLORS.default.background,
     paddingTop: 20,
     alignItems: "center",
     justifyContent: "flex-start",
@@ -86,6 +103,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   link: {
-    color: "#3366BB",
+    color: COLORS.default.link,
   },
 });
