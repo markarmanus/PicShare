@@ -1,20 +1,16 @@
 import React, { useState, useContext } from "react";
 import { StyleSheet, View, Image, Platform } from "react-native";
-import amplifyApi from "../API/AmplifyApi";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { AppForm } from "../components/AppForm";
-import UserContext from "../contexts/user";
-import IMAGES from "../../images";
-import AMPLIFY_ERRORS from "../constants/AmplifyErrors";
-import COLORS from "../config/Colors";
-import { AppAlert } from "../components/AppAlert";
 
-let Toast;
-if (Platform.OS !== "web") {
-  Toast = require("react-native-simple-toast").default;
-}
+import amplifyApi from "../../API/AmplifyApi";
+import { AppForm, AppAlert } from "../../components";
+import UserContext from "../../contexts/user";
+import IMAGES from "../../../images";
+import AMPLIFY_ERRORS from "../../constants/AmplifyErrors";
+import COLORS from "../../config/Colors";
+import { Toast } from "../../helpers/nativeImports";
 
-export default function Login(props) {
+function Login(props) {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({});
   const { setUser, user } = useContext(UserContext);
@@ -58,7 +54,7 @@ export default function Login(props) {
       style={styles.keyboardAvoiding}
     >
       <View style={styles.container}>
-        <Image style={styles.logo} source={IMAGES.LOGO} />
+        <Image resizeMode="contain" style={styles.logo} source={IMAGES.LOGO} />
         <View style={styles.innerContainer}>
           <AppForm
             inputsToRender={{
@@ -85,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.default.background,
-    paddingTop: 15,
+    paddingTop: 50,
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -96,10 +92,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
+    marginVertical: 30,
   },
   keyboardAvoiding: {
     backgroundColor: COLORS.default.background,
   },
 });
+export { Login };

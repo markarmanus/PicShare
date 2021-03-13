@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { AppButton } from "./AppButton";
 import { AppTextInput } from "./AppTextInput";
 
-export const AppForm = ({
+const AppForm = ({
   inputsToRender,
   isLoading,
   submitButtonText,
@@ -115,6 +115,7 @@ export const AppForm = ({
           error={passwordError}
           warning={passwordWarning}
           secureTextEntry={true}
+          autoCapitalize="none"
           onChangeText={(password) => {
             setPassword(password);
             if (!validateLoginOnly) validatePassword();
@@ -144,3 +145,4 @@ const styles = StyleSheet.create({
     width: "90%",
   },
 });
+export { AppForm };

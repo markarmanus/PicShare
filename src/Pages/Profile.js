@@ -1,15 +1,11 @@
 import React from "react";
-import { StyleSheet, View, ActivityIndicator, Image } from "react-native";
-import IMAGES from "../../images";
+import { StyleSheet, Text, View } from "react-native";
 import COLORS from "../config/Colors";
 
-function Loading({ user }) {
+function Profile({}) {
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={IMAGES.LOGO} />
-      <View style={styles.loadingIndicator}>
-        <ActivityIndicator color={COLORS.default.mainColor} />
-      </View>
+      <Text>Profile</Text>
     </View>
   );
 }
@@ -17,7 +13,7 @@ function Loading({ user }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.default.background,
+    backgroundColor: "#5497A7",
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 150,
@@ -32,4 +28,4 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
-export { Loading };
+export { Profile };

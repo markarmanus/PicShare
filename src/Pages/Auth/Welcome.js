@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import { AppButton } from "../components/AppButton";
-import IMAGES from "../../images";
-import COLORS from "../config/Colors";
+import { AppButton } from "../../components";
+import IMAGES from "../../../images";
+import COLORS from "../../config/Colors";
 
-export default function Welcome(props) {
+function Welcome(props) {
   const onSignUp = () => {
     props.navigation.navigate("Signup");
   };
@@ -14,7 +14,7 @@ export default function Welcome(props) {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={IMAGES.LOGO} />
+      <Image resizeMode="contain" style={styles.logo} source={IMAGES.LOGO} />
       <Text style={styles.text}>WELCOME TO PicSHARE</Text>
       <View style={styles.buttonContainer}>
         <AppButton onPress={onSignUp} title="Im New Here!" />
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EAEAEA",
-    paddingTop: 20,
+    paddingTop: 50,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -40,8 +40,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   logo: {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
+    marginVertical: 30,
   },
   buttonContainer: {
     flex: 1,
@@ -49,3 +50,4 @@ const styles = StyleSheet.create({
     width: "60%",
   },
 });
+export { Welcome };

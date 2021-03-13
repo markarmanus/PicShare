@@ -1,10 +1,16 @@
-import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
-import { AppButton } from "../components/AppButton";
+import React from "react";
+import { StyleSheet, Dimensions } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import amplifyApi from "../API/AmplifyApi";
 import UserContext from "../contexts/user";
 import COLORS from "../config/Colors";
-export default class Home extends React.Component {
+import { Camera, Profile, Gallery } from "./";
+import { AppNavBar } from "../components";
+import IMAGES from "../../images";
+
+const window = Dimensions.get("screen");
+
+class Home extends React.Component {
   static contextType = UserContext;
   onLogout = () => {
     const { setUser } = this.context;
@@ -15,24 +21,49 @@ export default class Home extends React.Component {
   };
 
   render() {
-    const { user } = this.context;
+    const Tab = createMaterialTopTabNavigator();
+
     return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
+      <Tab.Navigator
+        tabBarPosition="bottom"
+        initialRouteName="Camera"
+        sceneContainerStyle={{
           flex: 1,
+          width: window.width,
+          height: window.height,
         }}
+        tabBar={(props) => <AppNavBar {...props} />}
       >
-        {user?.fullName ? <Text>{user.fullName}</Text> : null}
-        <View
-          style={{
-            width: "50%",
+        <Tab.Screen
+          name="Gallery"
+          component={Gallery}
+          options={{
+            image: IMAGES.GALLERY,
+            imageColor: COLORS.default.mainColor,
+            backgroundColor: COLORS.default.secondaryColor,
           }}
-        >
-          <AppButton title="Logout" onPress={this.onLogout} />
-        </View>
-      </View>
+        />
+        <Tab.Screen
+          name="Camera"
+          component={Camera}
+          options={{
+            image: IMAGES.LOGO,
+            imageSize: 40,
+            imageColor: COLORS.default.mainColor,
+            backgroundColor: COLORS.default.background,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            image: IMAGES.USER,
+            imageSize: 30,
+            imageColor: COLORS.default.mainColor,
+            backgroundColor: "#5497A7",
+          }}
+        />
+      </Tab.Navigator>
     );
   }
 }
@@ -45,3 +76,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+export { Home };

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import AwesomeAlert from "react-native-awesome-alerts";
 import COLORS from "../config/Colors";
 
-export const AppAlert = ({ alert }) => {
+const AppAlert = ({ alert }) => {
   return (
     <AwesomeAlert
       show={alert.show}
@@ -28,3 +28,4 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
 });
+export { AppAlert };

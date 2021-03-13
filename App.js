@@ -3,13 +3,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
-import Login from "./src/Pages/Login";
-import Loading from "./src/Pages/Loading";
-import Home from "./src/Pages/Home";
-import Welcome from "./src/Pages/Welcome";
+import { Loading } from "./src/Pages";
+import { Home } from "./src/Pages/Home";
+import { Welcome, Signup, Login, ValidateEmail } from "./src/Pages/Auth";
 import amplifyApi from "./src/API/AmplifyApi";
-import Signup from "./src/Pages/Singup";
-import ValidateEmail from "./src/Pages/ValidateEmail";
 import UserContext from "./src/contexts/user";
 import transformers from "./src/helpers/transformers";
 

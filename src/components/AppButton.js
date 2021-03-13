@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import COLORS from "../config/Colors";
 
-export const AppButton = ({
+const AppButton = ({
   onPress,
   title,
   containerStyle,
@@ -64,3 +64,5 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+
+export { AppButton };

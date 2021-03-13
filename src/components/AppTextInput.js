@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, TextInput, View, Text } from "react-native";
 import COLORS from "../config/Colors";
 
-export const AppTextInput = ({
+const AppTextInput = ({
   onChangeText,
   placeholder,
   containerStyle,
@@ -51,3 +51,4 @@ const styles = StyleSheet.create({
     color: COLORS.default.warning,
   },
 });
+export { AppTextInput };

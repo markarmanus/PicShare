@@ -1,15 +1,11 @@
 import React from "react";
-import { StyleSheet, View, ActivityIndicator, Image } from "react-native";
-import IMAGES from "../../images";
+import { StyleSheet, Text, View } from "react-native";
 import COLORS from "../config/Colors";
 
-function Loading({ user }) {
+function Camera({}) {
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={IMAGES.LOGO} />
-      <View style={styles.loadingIndicator}>
-        <ActivityIndicator color={COLORS.default.mainColor} />
-      </View>
+      <Text>Camera</Text>
     </View>
   );
 }
@@ -32,4 +28,4 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
-export { Loading };
+export { Camera };

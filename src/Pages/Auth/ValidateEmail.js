@@ -1,20 +1,15 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, Text, Platform } from "react-native";
-import amplifyApi from "../API/AmplifyApi";
+import { StyleSheet, View, Image, Text } from "react-native";
+import amplifyApi from "../../API/AmplifyApi";
 
-import { AppButton } from "../components/AppButton";
-import { AppTextInput } from "../components/AppTextInput";
+import { AppButton, AppTextInput } from "../../components";
 import { StackActions } from "@react-navigation/native";
-import UserContext from "../contexts/user";
-import COLORS from "../config/Colors";
-import IMAGES from "../../images";
+import UserContext from "../../contexts/user";
+import COLORS from "../../config/Colors";
+import IMAGES from "../../../images";
+import { Toast } from "../../helpers/nativeImports";
 
-let Toast;
-if (Platform.OS !== "web") {
-  Toast = require("react-native-simple-toast").default;
-}
-
-export default function ValidateEmail(props) {
+function ValidateEmail(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [validationCode, setValidationCode] = useState("");
@@ -53,7 +48,7 @@ export default function ValidateEmail(props) {
   };
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={IMAGES.LOGO} />
+      <Image resizeMode="contain" style={styles.logo} source={IMAGES.LOGO} />
 
       <View style={styles.innerContainer}>
         <Text style={styles.explainText}>
@@ -87,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.default.background,
-    paddingTop: 20,
+    paddingTop: 50,
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -97,9 +92,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
+    width: 250,
+    height: 250,
+    marginVertical: 30,
   },
 
   explainText: {
@@ -110,3 +105,4 @@ const styles = StyleSheet.create({
     color: COLORS.default.link,
   },
 });
+export { ValidateEmail };
