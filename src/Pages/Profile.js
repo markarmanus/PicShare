@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import COLORS from "../config/Colors";
 
-function Profile({}) {
+function Profile(props) {
   return (
     <View style={styles.container}>
-      <Text>Profile</Text>
+      <Text>{JSON.stringify(props)}</Text>
     </View>
   );
 }

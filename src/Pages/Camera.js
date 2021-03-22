@@ -4,7 +4,6 @@ import COLORS from "../config/Colors";
 import { AppCamera } from "../components";
 
 function Camera({ navigation, ...props }) {
-  console.log(props);
   return (
     <View style={styles.container}>
       <AppCamera {...props.route.params} navigation={navigation} />

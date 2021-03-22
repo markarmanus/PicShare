@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -13,6 +13,9 @@ import {
   AppClickableIcon,
   ICON_COMPONENT_TYPES,
 } from "../components/AppClickableIcon";
+import MainContext from "../contexts/main";
+import IMAGES from "../../images";
+import { useFocusEffect } from "@react-navigation/native";
 
 const EXPO_SUPPORTED_RATIOS = ["16:9", "4:3", "1:1"];
 const window = Dimensions.get("window");
@@ -20,10 +23,13 @@ let done = false;
 const AppCamera = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [cameraMode, setCameraMode] = useState("picture");
   const [aspectRatio, setAspectRatio] = useState("4:3");
   const [aspectRatios, setAspectRatios] = useState([]);
   const [flash, setFlash] = useState("off");
   const [currentActiveInTopBar, setCurrentActiveInTopBar] = useState(undefined);
+  const { mainContext, setMainContext } = useContext(MainContext);
+
   const camera = useRef(null);
   const topBarOpacity = useRef(new Animated.Value(1)).current;
   const topBarWidth = useRef(new Animated.Value(1)).current;
@@ -48,11 +54,38 @@ const AppCamera = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
+  useFocusEffect(() => {
     checkCameraPermission();
-    navigation.addListener("selectedTabPress", (e) => {
+    const unsub = navigation.addListener("selectedTabPress", (e) => {
       if (e.data.selectedTabIndex === 1) {
-        takePicture();
+        onCameraClick(cameraMode);
+      }
+    });
+    return () => {
+      unsub();
+    };
+  });
+
+  useEffect(() => {
+    navigation.addListener("blur", (e) => {
+      if (camera.current) {
+        setTimeout(() => {
+          camera.current.pausePreview();
+        }, 300);
+        if (mainContext.cameraMode !== "picture") {
+          setMainContext({
+            cameraIcon: IMAGES.LOGO,
+            cameraMode: "picture",
+            cameraIconSize: 40,
+          });
+          setCameraMode("picture");
+        }
+      }
+    });
+
+    navigation.addListener("focus", (e) => {
+      if (camera.current) {
+        camera.current.resumePreview();
       }
     });
   }, []);
@@ -74,9 +107,16 @@ const AppCamera = ({ navigation }) => {
       setType(Camera.Constants.Type.front);
     }
   };
-
-  const takePicture = () => {
-    console.log("PictureTAken");
+  const onChangeCameraMode = () => {
+    const newCameraMode = cameraMode === "picture" ? "video" : "picture";
+    setMainContext({
+      cameraMode: newCameraMode,
+      cameraIconSize: 40,
+      cameraIcon: cameraMode === "picture" ? IMAGES.VIDEO_RECORD : IMAGES.LOGO,
+    });
+    setCameraMode(newCameraMode);
+  };
+  const flashBackground = () => {
     Animated.sequence([
       Animated.timing(cameraBackgroundOpacity, {
         toValue: 1,
@@ -89,6 +129,27 @@ const AppCamera = ({ navigation }) => {
         useNativeDriver: true,
       }),
     ]).start();
+  };
+  const onCameraClick = () => {
+    if (cameraMode === "picture") {
+      flashBackground();
+    } else if (cameraMode === "recording") {
+      setMainContext({
+        cameraIcon: IMAGES.VIDEO_RECORD,
+        cameraMode: "video",
+        cameraIconSize: 40,
+      });
+      setCameraMode("video");
+    } else {
+      setMainContext({
+        cameraIcon: IMAGES.STOP,
+        cameraMode: "recording",
+        cameraIconSize: 30,
+      });
+      if (currentActiveInTopBar !== undefined)
+        setCurrentActiveInTopBar(undefined);
+      setCameraMode("recording");
+    }
   };
 
   const startTopBarAnimation = () => {
@@ -174,9 +235,14 @@ const AppCamera = ({ navigation }) => {
             type: ICON_COMPONENT_TYPES.MaterilaIcon,
             name: flashIcon,
             color: flashIcon === "flash-on" ? COLORS.default.warning : "white",
+            disabled: cameraMode === "recording",
             onPress: () => onClickIcon("flash"),
           },
-          { ratio: aspectRatio, onPress: () => onClickIcon("ratio") },
+          {
+            ratio: aspectRatio,
+            onPress: () => onClickIcon("ratio"),
+            disabled: cameraMode === "recording",
+          },
         ];
     }
   };
@@ -191,12 +257,10 @@ const AppCamera = ({ navigation }) => {
     camera.current.pausePreview();
     done = true;
   }
-
   const aspectRatioSplit = aspectRatio
     .split(":")
     .map((value) => parseInt(value));
   const heightRatio = aspectRatioSplit[0] / aspectRatioSplit[1];
-  console.log(type);
   return (
     <View style={styles.container}>
       <Animated.View
@@ -218,9 +282,13 @@ const AppCamera = ({ navigation }) => {
             const ratioSplit = icon.ratio.split(":");
             return (
               <TouchableOpacity
-                style={[{ borderColor: colorToUse }, styles.ratioIconContainer]}
+                style={[
+                  { borderColor: colorToUse, opacity: icon.disabled ? 0.6 : 1 },
+                  styles.ratioIconContainer,
+                ]}
                 onPress={icon.onPress}
-                key={Math.random()}
+                disabled={icon.disabled}
+                key={ratioSplit[0]}
               >
                 <View style={styles.ratioIconInnerContainer}>
                   <Text style={{ color: colorToUse }}>{ratioSplit[0]}</Text>
@@ -234,7 +302,7 @@ const AppCamera = ({ navigation }) => {
             <AppClickableIcon
               containerStyle={styles.iconContainer}
               iconStyle={styles.icon}
-              key={icon.name}
+              key={Math.random()}
               tintColor={"white"}
               size={24}
               color={"white"}
@@ -249,7 +317,16 @@ const AppCamera = ({ navigation }) => {
           name="flip-camera-android"
           color="white"
           onPress={toggleType}
-          size={33}
+          size={30}
+        />
+        <AppClickableIcon
+          type={ICON_COMPONENT_TYPES.MaterilaIcon}
+          disabled={cameraMode === "recording"}
+          key={Math.random()}
+          name={cameraMode === "picture" ? "videocam" : "camera-alt"}
+          color="white"
+          onPress={onChangeCameraMode}
+          size={30}
         />
       </View>
       <Camera
@@ -335,8 +412,12 @@ const styles = StyleSheet.create({
   },
   flipCameraIconContainer: {
     position: "absolute",
+    backgroundColor: "rgba(0,0,0,0.3)",
     zIndex: 300,
-    top: 100,
+    top: 120,
+    borderRadius: 15,
+    padding: 5,
+    paddingHorizontal: 7,
     right: 20,
   },
 });
