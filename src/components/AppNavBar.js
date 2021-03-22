@@ -1,6 +1,12 @@
 import React, { useRef } from "react";
-import { StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
-import Animated from "react-native-reanimated";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  Animated as ReactAnimated,
+} from "react-native";
+import Animated, { useCode, call } from "react-native-reanimated";
 import { Svg, Circle } from "react-native-svg";
 import COLORS from "../config/Colors";
 
@@ -9,7 +15,8 @@ const windowWidth = Dimensions.get("window").width;
 function AppNavBar({ state, descriptors, navigation, position }) {
   const currentTabOptions = descriptors[state.routes[state.index].key].options;
   const backgroundColor = currentTabOptions.backgroundColor || "transparent";
-  const selectedImageOpacity = Animated.interpolate(position, {
+  const reactAnimatedPosition = new ReactAnimated.Value(0);
+  const selectedImageOpacity = reactAnimatedPosition.interpolate({
     inputRange: [0, 0.1, 0.9, 1, 1.1, 1.9, 2, 2.1, 2.9, 3],
     outputRange: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
   });
@@ -17,19 +24,41 @@ function AppNavBar({ state, descriptors, navigation, position }) {
     inputRange: [0, 1, 2],
     outputRange: [windowWidth * -0.8 * 0.33, 0, windowWidth * 0.8 * 0.33],
   });
+  const bla = new ReactAnimated.Value(1);
+  useCode(() => {
+    return call([position], (position) => {
+      reactAnimatedPosition.setValue(position[0]);
+    });
+  }, [position]);
   const containerTransform = [{ translateX: circleContainerTransform }];
   const imageSize = (currentTabOptions.imageSize || 30) * 1.3;
   const imageTransform = [
     {
-      translateX: new Animated.Value(-imageSize / 2),
+      translateX: new ReactAnimated.Value(-imageSize / 2),
     },
-    { translateY: new Animated.Value(-imageSize / 2) },
+    { translateY: new ReactAnimated.Value(-imageSize / 2) },
+    { scaleY: bla },
   ];
 
   const circleSize = 76;
   const circleGap = 7;
   const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+  const animateCamera = () => {
+    ReactAnimated.sequence([
+      ReactAnimated.timing(bla, {
+        toValue: 0.4,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      ReactAnimated.timing(bla, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
   const selectedTabPressed = () => {
+    if (state.index === 1) animateCamera();
     navigation.emit({
       type: "selectedTabPress",
       canPreventDefault: true,
@@ -45,13 +74,12 @@ function AppNavBar({ state, descriptors, navigation, position }) {
         onPress={selectedTabPressed}
         style={[styles.circleContainer, { transform: containerTransform }]}
       >
-        <Animated.Image
+        <ReactAnimated.Image
           resizeMode="center"
           tintColor={currentTabOptions.imageColor || COLORS.default.mainColor}
           style={[
             styles.selectedImage,
             { transform: imageTransform, opacity: selectedImageOpacity },
-            ,
             {
               width: imageSize,
               height: imageSize,
@@ -92,7 +120,6 @@ function AppNavBar({ state, descriptors, navigation, position }) {
           if (!isFocused && !event.defaultPrevented) {
             navigation.jumpTo(route.name, {
               currentScreen: route.name,
-              startAnimation,
             });
           }
         };
