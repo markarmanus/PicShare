@@ -19,7 +19,6 @@ class Home extends React.Component {
     };
     amplifyApi.singOut(afterLogout);
   };
-
   render() {
     const Tab = createMaterialTopTabNavigator();
 
@@ -27,8 +26,8 @@ class Home extends React.Component {
       <Tab.Navigator
         tabBarPosition="bottom"
         initialRouteName="Camera"
+        lazy={true}
         sceneContainerStyle={{
-          flex: 1,
           width: window.width,
           height: window.height,
         }}

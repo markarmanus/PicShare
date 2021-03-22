@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
 import Animated from "react-native-reanimated";
 import { Svg, Circle } from "react-native-svg";
-import IMAGES from "../../images";
 import COLORS from "../config/Colors";
 
 const windowWidth = Dimensions.get("window").width;
@@ -29,9 +28,21 @@ function AppNavBar({ state, descriptors, navigation, position }) {
 
   const circleSize = 76;
   const circleGap = 7;
+  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+  const selectedTabPressed = () => {
+    navigation.emit({
+      type: "selectedTabPress",
+      canPreventDefault: true,
+      data: {
+        selectedTabIndex: state.index,
+      },
+    });
+  };
+
   return (
     <View style={styles.navBarContainer}>
-      <Animated.View
+      <AnimatedTouchable
+        onPress={selectedTabPressed}
         style={[styles.circleContainer, { transform: containerTransform }]}
       >
         <Animated.Image
@@ -63,7 +74,7 @@ function AppNavBar({ state, descriptors, navigation, position }) {
             fill={"white"}
           />
         </Svg>
-      </Animated.View>
+      </AnimatedTouchable>
 
       {state.routes.map((route, index) => {
         const isFocused = state.index === index;
@@ -73,10 +84,16 @@ function AppNavBar({ state, descriptors, navigation, position }) {
             type: "tabPress",
             target: route.key,
             canPreventDefault: true,
+            data: {
+              wasFocused: isFocused,
+            },
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
+            navigation.jumpTo(route.name, {
+              currentScreen: route.name,
+              startAnimation,
+            });
           }
         };
 
@@ -93,26 +110,31 @@ function AppNavBar({ state, descriptors, navigation, position }) {
           outputRange: inputRange.map((i) => (i === index ? 0 : 1)),
         });
 
+        const content = (
+          <Animated.Image
+            resizeMode="center"
+            style={[
+              styles.notSelectedIcon,
+              { opacity },
+              {
+                width: options.imageSize || 30,
+                height: options.imageSize || 30,
+              },
+            ]}
+            source={options.image}
+          />
+        );
         return (
-          <TouchableOpacity
-            onPress={onPress}
-            key={index}
-            onLongPress={onLongPress}
-            style={styles.clickableIcon}
-          >
-            <Animated.Image
-              resizeMode="center"
-              style={[
-                styles.notSelectedIcon,
-                { opacity },
-                {
-                  width: options.imageSize || 30,
-                  height: options.imageSize || 30,
-                },
-              ]}
-              source={options.image}
-            />
-          </TouchableOpacity>
+          <View key={index} style={styles.iconContainer}>
+            <TouchableOpacity
+              onPress={onPress}
+              disabled={isFocused}
+              onLongPress={onLongPress}
+              style={styles.clickableIcon}
+            >
+              {content}
+            </TouchableOpacity>
+          </View>
         );
       })}
     </View>
@@ -136,6 +158,7 @@ const styles = StyleSheet.create({
   },
   circleContainer: {
     position: "absolute",
+    zIndex: 1,
     top: -30,
   },
   selectedImage: {
@@ -153,11 +176,19 @@ const styles = StyleSheet.create({
     zIndex: 100,
     alignSelf: "center",
   },
-  clickableIcon: {
+  iconContainer: {
     flex: 1,
     alignSelf: "center",
     justifyContent: "center",
     alignContent: "center",
+    textAlign: "center",
+  },
+  clickableIcon: {
+    alignSelf: "center",
+    justifyContent: "center",
+    alignContent: "center",
+
+    width: "70%",
     textAlign: "center",
   },
 });
