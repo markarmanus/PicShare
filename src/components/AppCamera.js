@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Dimensions,
   View,
+  Image,
   Text,
   TouchableOpacity,
   Animated,
@@ -16,20 +17,21 @@ import {
 import MainContext from "../contexts/main";
 import IMAGES from "../../images";
 import { useFocusEffect } from "@react-navigation/native";
+import { CAMERA } from "expo-permissions";
 
 const EXPO_SUPPORTED_RATIOS = ["16:9", "4:3", "1:1"];
 const window = Dimensions.get("window");
-let done = false;
 const AppCamera = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [cameraMode, setCameraMode] = useState("picture");
   const [aspectRatio, setAspectRatio] = useState("4:3");
   const [aspectRatios, setAspectRatios] = useState([]);
-  const [flash, setFlash] = useState("off");
+  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [currentActiveInTopBar, setCurrentActiveInTopBar] = useState(undefined);
+  const [imagePreviewTransform, setImagePreviewTransform] = useState([]);
+  const [lastTakenImage, setLastTakeImage] = useState();
   const { mainContext, setMainContext } = useContext(MainContext);
-
   const camera = useRef(null);
   const topBarOpacity = useRef(new Animated.Value(1)).current;
   const topBarWidth = useRef(new Animated.Value(1)).current;
@@ -56,13 +58,13 @@ const AppCamera = ({ navigation }) => {
 
   useFocusEffect(() => {
     checkCameraPermission();
-    const unsub = navigation.addListener("selectedTabPress", (e) => {
+    const unSub = navigation.addListener("selectedTabPress", (e) => {
       if (e.data.selectedTabIndex === 1) {
         onCameraClick(cameraMode);
       }
     });
     return () => {
-      unsub();
+      unSub();
     };
   });
 
@@ -120,12 +122,12 @@ const AppCamera = ({ navigation }) => {
     Animated.sequence([
       Animated.timing(cameraBackgroundOpacity, {
         toValue: 1,
-        duration: 20,
+        duration: 200,
         useNativeDriver: true,
       }),
       Animated.timing(cameraBackgroundOpacity, {
         toValue: 0,
-        duration: 20,
+        duration: 200,
         useNativeDriver: true,
       }),
     ]).start();
@@ -133,6 +135,47 @@ const AppCamera = ({ navigation }) => {
   const onCameraClick = () => {
     if (cameraMode === "picture") {
       flashBackground();
+      camera.current.takePictureAsync({
+        onPictureSaved: (s) => {
+          setLastTakeImage(s.uri);
+          setTimeout(() => {
+            const imageScale = new Animated.Value(1);
+            const imageXTranslate = new Animated.Value(0);
+            const imageYTranslate = new Animated.Value(0);
+            Animated.sequence([
+              Animated.parallel([
+                Animated.timing(imageScale, {
+                  toValue: 0.2,
+                  duration: 600,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(imageXTranslate, {
+                  toValue: window.width * -1.5,
+                  duration: 600,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(imageYTranslate, {
+                  toValue: window.height * 1.3,
+                  duration: 600,
+                  useNativeDriver: true,
+                }),
+              ]),
+              Animated.timing(imageXTranslate, {
+                toValue: window.width * -5.5,
+                duration: 300,
+                delay: 500,
+                useNativeDriver: true,
+              }),
+            ]).start();
+            setImagePreviewTransform([
+              { scaleX: imageScale },
+              { scaleY: imageScale },
+              { translateX: imageXTranslate },
+              { translateY: imageYTranslate },
+            ]);
+          }, 100);
+        },
+      });
     } else if (cameraMode === "recording") {
       setMainContext({
         cameraIcon: IMAGES.VIDEO_RECORD,
@@ -207,27 +250,27 @@ const AppCamera = ({ navigation }) => {
           {
             type: ICON_COMPONENT_TYPES.MaterilaIcon,
             name: "flash-on",
-            onPress: () => setFlashMode("on"),
+            onPress: () => setFlashMode(Camera.Constants.FlashMode.on),
             color: color("on"),
           },
           {
             type: ICON_COMPONENT_TYPES.MaterilaIcon,
             name: "flash-off",
-            onPress: () => setFlashMode("off"),
+            onPress: () => setFlashMode(Camera.Constants.FlashMode.off),
             color: color("off"),
           },
           {
             type: ICON_COMPONENT_TYPES.MaterilaIcon,
             name: "flash-auto",
-            onPress: () => setFlashMode("auto"),
+            onPress: () => setFlashMode(Camera.Constants.FlashMode.auto),
             color: color("auto"),
           },
         ];
       default:
         const flashIcon =
-          flash === "off"
+          flash === Camera.Constants.FlashMode.off
             ? "flash-off"
-            : flash === "auto"
+            : flash === Camera.Constants.FlashMode.auto
             ? "flash-auto"
             : "flash-on";
         return [
@@ -253,10 +296,7 @@ const AppCamera = ({ navigation }) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-  if (!done && camera.current) {
-    camera.current.pausePreview();
-    done = true;
-  }
+
   const aspectRatioSplit = aspectRatio
     .split(":")
     .map((value) => parseInt(value));
@@ -336,9 +376,30 @@ const AppCamera = ({ navigation }) => {
         ref={camera}
         style={[styles.camera, { height: window.width * heightRatio }]}
         zoom={0}
-        flash={flash}
+        flashMode={flash}
         type={type}
       >
+        {lastTakenImage ? (
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 0,
+              width: window.width,
+              height: window.width * heightRatio,
+              transform: imagePreviewTransform,
+            }}
+          >
+            <Image
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              resizeMethod="resize"
+              resizeMode="center"
+              source={{ uri: lastTakenImage }}
+            />
+          </Animated.View>
+        ) : null}
         <TouchableOpacity
           style={styles.cameraBackground}
           onPress={() => onClickIcon()}
