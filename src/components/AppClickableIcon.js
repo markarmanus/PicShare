@@ -15,7 +15,7 @@ const AppClickableIcon = ({
   disabled,
   onPress,
   type,
-  key,
+  containerKey,
   ...props
 }) => {
   const getProperComponent = () => {
@@ -37,15 +37,14 @@ const AppClickableIcon = ({
         );
     }
   };
-  console.log(disabled);
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      key={key}
+      key={containerKey}
       style={[
         styles.container,
-        { opacity: disabled ? 0.1 : 1 },
+        { opacity: disabled ? 0.6 : 1 },
         containerStyle,
       ]}
     >

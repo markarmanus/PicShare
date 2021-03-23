@@ -302,7 +302,7 @@ const AppCamera = ({ navigation }) => {
             <AppClickableIcon
               containerStyle={styles.iconContainer}
               iconStyle={styles.icon}
-              key={Math.random()}
+              containerKey={Math.random()}
               tintColor={"white"}
               size={24}
               color={"white"}
@@ -322,7 +322,7 @@ const AppCamera = ({ navigation }) => {
         <AppClickableIcon
           type={ICON_COMPONENT_TYPES.MaterilaIcon}
           disabled={cameraMode === "recording"}
-          key={Math.random()}
+          containerKey={Math.random()}
           name={cameraMode === "picture" ? "videocam" : "camera-alt"}
           color="white"
           onPress={onChangeCameraMode}
