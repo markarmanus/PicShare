@@ -1,12 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import COLORS from "../config/Colors";
+import { StyleSheet, View, Platform } from "react-native";
 import { AppCamera } from "../components";
 
 function Camera({ navigation, ...props }) {
   return (
     <View style={styles.container}>
-      <AppCamera {...props.route.params} navigation={navigation} />
+      {Platform.OS !== "web" ? (
+        <AppCamera {...props.route.params} navigation={navigation} />
+      ) : null}
     </View>
   );
 }

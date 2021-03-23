@@ -27,6 +27,7 @@ const AppCamera = ({ navigation }) => {
   const [cameraMode, setCameraMode] = useState("picture");
   const [aspectRatio, setAspectRatio] = useState("4:3");
   const [aspectRatios, setAspectRatios] = useState([]);
+  const [videoTimer, setVideoTimer] = useState();
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [currentActiveInTopBar, setCurrentActiveInTopBar] = useState(undefined);
   const [imagePreviewTransform, setImagePreviewTransform] = useState([]);
@@ -183,18 +184,61 @@ const AppCamera = ({ navigation }) => {
         cameraIconSize: 40,
       });
       setCameraMode("video");
+      if (videoTimer) {
+        clearInterval(videoTimer.stop);
+        setVideoTimer({});
+      }
     } else {
       setMainContext({
         cameraIcon: IMAGES.STOP,
         cameraMode: "recording",
         cameraIconSize: 30,
       });
-      if (currentActiveInTopBar !== undefined)
+      if (currentActiveInTopBar !== undefined) {
         setCurrentActiveInTopBar(undefined);
+      }
       setCameraMode("recording");
+      startVideoTimer();
     }
   };
+  const startVideoTimer = () => {
+    const stop = setInterval(() => {
+      setVideoTimer((oldTimer) => {
+        if (oldTimer) {
+          const oldTimeInt = {
+            hour: parseInt(oldTimer.hour),
+            minute: parseInt(oldTimer.minute),
+            second: parseInt(oldTimer.second),
+          };
+          const newTime = { ...oldTimer };
+          if (oldTimeInt.second === 60) {
+            newTime.second = "00";
+            if (oldTimeInt.minute === 60) {
+              newTime.minute = "00";
+              const newHour = oldTimeInt.hour + 1;
+              newTime.hour = newHour < 10 ? `0${newHour}` : newHour;
+            } else {
+              const newMinute = oldTimeInt.minute + 1;
+              newTime.minute = newMinute < 10 ? `0${newMinute}` : newMinute;
+            }
+          } else {
+            const newSecond = oldTimeInt.second + 1;
+            newTime.second = newSecond < 10 ? `0${newSecond}` : newSecond;
+          }
+          return newTime;
+        }
+      });
+    }, 1000);
 
+    const newVideoTimer = {
+      hour: "00",
+      minute: "00",
+      second: "00",
+      show: true,
+      stop,
+    };
+    setVideoTimer(newVideoTimer);
+  };
   const startTopBarAnimation = () => {
     const fadeDuration = 250;
     const scaleDuration = 270;
@@ -328,7 +372,7 @@ const AppCamera = ({ navigation }) => {
                 ]}
                 onPress={icon.onPress}
                 disabled={icon.disabled}
-                key={ratioSplit[0]}
+                key={Math.random()}
               >
                 <View style={styles.ratioIconInnerContainer}>
                   <Text style={{ color: colorToUse }}>{ratioSplit[0]}</Text>
@@ -354,6 +398,8 @@ const AppCamera = ({ navigation }) => {
       <View style={styles.flipCameraIconContainer}>
         <AppClickableIcon
           type={ICON_COMPONENT_TYPES.MaterilaIcon}
+          disabled={cameraMode === "recording"}
+          containerKey={Math.random()}
           name="flip-camera-android"
           color="white"
           onPress={toggleType}
@@ -381,24 +427,28 @@ const AppCamera = ({ navigation }) => {
       >
         {lastTakenImage ? (
           <Animated.View
-            style={{
-              position: "absolute",
-              top: 0,
-              width: window.width,
-              height: window.width * heightRatio,
-              transform: imagePreviewTransform,
-            }}
+            style={[
+              style.lastTakenImageContainer,
+              {
+                height: window.width * heightRatio,
+                transform: imagePreviewTransform,
+              },
+            ]}
           >
             <Image
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
+              style={style.lastTakenImage}
               resizeMethod="resize"
               resizeMode="center"
               source={{ uri: lastTakenImage }}
             />
           </Animated.View>
+        ) : null}
+        {videoTimer?.show ? (
+          <View style={style.timerContainer}>
+            <Text
+              style={{ color: "white" }}
+            >{`${videoTimer.hour}:${videoTimer.minute}:${videoTimer.second}`}</Text>
+          </View>
         ) : null}
         <TouchableOpacity
           style={styles.cameraBackground}
@@ -480,6 +530,26 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingHorizontal: 7,
     right: 20,
+  },
+  timerContainer: {
+    width: 80,
+    height: 30,
+    borderRadius: 20,
+    position: "absolute",
+    bottom: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  lastTakenImageContainer: {
+    position: "absolute",
+    top: 0,
+    width: window.width,
+  },
+  lastTakenImage: {
+    width: "100%",
+    height: "100%",
   },
 });
 export { AppCamera };
