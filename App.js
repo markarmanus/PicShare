@@ -15,13 +15,14 @@ Amplify.configure(awsconfig);
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(undefined);
+  const [startLoadingAnimation, setStartLoadingAnimation] = useState(false);
   const [userAuthenticated, setUserAuthenticated] = useState(false);
 
   const checkIfLoggedIn = async () => {
     const onSuccess = (user) => {
       setUserAuthenticated(true);
       setUser(transformers.transformUser(user));
-      setLoading(false);
+      setStartLoadingAnimation(true);
     };
     const onFail = () => {
       setUserAuthenticated(false);
@@ -33,9 +34,13 @@ export default function App() {
   useEffect(() => {
     if (!userAuthenticated || user === undefined) checkIfLoggedIn();
   }, [loading, user]);
-
   if (loading) {
-    return <Loading />;
+    return (
+      <Loading
+        onAnimationFinish={() => setLoading(false)}
+        startAnimation={startLoadingAnimation}
+      />
+    );
   }
   const defaultOptions = {
     title: "",
