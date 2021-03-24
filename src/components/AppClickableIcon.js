@@ -1,12 +1,18 @@
 import React from "react";
 import { StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-
+import {
+  Ionicons,
+  MaterialIcons,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 const ICON_COMPONENT_TYPES = {
   MaterilaIcon: "materialIcon",
   Image: "image",
   Ionicons: "ionicons",
+  MaterialCommunityIcons: "materialCommunityIcons",
+  FontAwesome5: "fontAwesome5",
 };
 
 const AppClickableIcon = ({
@@ -25,6 +31,10 @@ const AppClickableIcon = ({
 
       case ICON_COMPONENT_TYPES.MaterilaIcon:
         return <MaterialIcons {...props} />;
+      case ICON_COMPONENT_TYPES.MaterialCommunityIcons:
+        return <MaterialCommunityIcons {...props} />;
+      case ICON_COMPONENT_TYPES.FontAwesome5:
+        return <FontAwesome5 {...props} />;
       case ICON_COMPONENT_TYPES.Image:
       default:
         return (

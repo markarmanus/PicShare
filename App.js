@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
-import { Loading } from "./src/Pages";
+import { Loading, CreateAlbum } from "./src/Pages";
 import { Home } from "./src/Pages/Home";
 import { Welcome, Signup, Login, ValidateEmail } from "./src/Pages/Auth";
 import amplifyApi from "./src/API/AmplifyApi";
@@ -52,11 +52,23 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           {userAuthenticated ? (
-            <Stack.Screen
-              name="Home"
-              options={defaultOptions}
-              component={Home}
-            />
+            <>
+              <Stack.Screen
+                name="Home"
+                options={defaultOptions}
+                component={Home}
+              />
+              <Stack.Screen
+                name="CreateAlbum"
+                options={{
+                  ...defaultOptions,
+                  title: "Create Album",
+                  headerTitleAlign: "center",
+                  headerTintColor: "white",
+                }}
+                component={CreateAlbum}
+              />
+            </>
           ) : (
             <>
               <Stack.Screen

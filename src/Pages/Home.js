@@ -50,11 +50,10 @@ class Home extends React.Component {
           <Tab.Screen
             name="Gallery"
             component={Gallery}
-            initialParams={{ arrayItem: "Hello" }}
             options={{
               image: IMAGES.GALLERY,
               imageColor: COLORS.default.mainColor,
-              backgroundColor: COLORS.default.accent,
+              backgroundColor: COLORS.default.lightBlack,
             }}
           />
           <Tab.Screen
