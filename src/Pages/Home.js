@@ -39,7 +39,7 @@ class Home extends React.Component {
       <MainContext.Provider value={mainContextValue}>
         <Tab.Navigator
           tabBarPosition="bottom"
-          initialRouteName="Camera"
+          initialRouteName="Gallery"
           lazy={true}
           sceneContainerStyle={{
             width: window.width,
@@ -54,7 +54,7 @@ class Home extends React.Component {
             options={{
               image: IMAGES.GALLERY,
               imageColor: COLORS.default.mainColor,
-              backgroundColor: COLORS.default.secondaryColor,
+              backgroundColor: COLORS.default.accent,
             }}
           />
           <Tab.Screen
