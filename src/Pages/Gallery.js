@@ -26,6 +26,8 @@ const window = Dimensions.get("screen");
 const gridMargin = 5;
 const albumSquareSize = (window.width * 0.7) / 2 - 10;
 class Gallery extends React.Component {
+  static contextType = UserContext;
+
   state = {
     albums: [],
     loading: true,
@@ -39,7 +41,7 @@ class Gallery extends React.Component {
     };
     amplifyApi.singOut(afterLogout);
   };
-  bla = () => {
+  changeGridView = () => {
     if (this.state.gridMode === "grid") {
       Animated.timing(this.state.widths, {
         toValue: window.width * 0.9,
@@ -133,7 +135,7 @@ class Gallery extends React.Component {
           <AppClickableIcon
             type={ICON_COMPONENT_TYPES.MaterialCommunityIcons}
             name="view-grid"
-            onPress={this.bla}
+            onPress={this.changeGridView}
             size={24}
             color="white"
           />

@@ -21,6 +21,11 @@ const signIn = async (email, password, onSuccess, onFail) => {
     });
 };
 
+const getIdJwtToken = async () => {
+  const session = await Auth.currentSession();
+  return session.getIdToken().getJwtToken();
+};
+
 const resendConfirmationCode = async (email, onSuccess, onFail) => {
   await Auth.resendSignUp(email).then(onSuccess).catch(onFail);
 };
@@ -45,5 +50,6 @@ const amplifyApi = {
   validateEmail,
   resendConfirmationCode,
   singOut,
+  getIdJwtToken,
 };
 export default amplifyApi;

@@ -17,7 +17,6 @@ import {
 import MainContext from "../contexts/main";
 import IMAGES from "../../images";
 import { useFocusEffect } from "@react-navigation/native";
-import { CAMERA } from "expo-permissions";
 
 const EXPO_SUPPORTED_RATIOS = ["16:9", "4:3", "1:1"];
 const window = Dimensions.get("window");
@@ -133,48 +132,51 @@ const AppCamera = ({ navigation }) => {
       }),
     ]).start();
   };
-  const onCameraClick = () => {
+  const animatePictureTaken = () => {
+    setTimeout(() => {
+      const imageScale = new Animated.Value(1);
+      const imageXTranslate = new Animated.Value(0);
+      const imageYTranslate = new Animated.Value(0);
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(imageScale, {
+            toValue: 0.2,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(imageXTranslate, {
+            toValue: window.width * -1.5,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(imageYTranslate, {
+            toValue: window.height * 1.3,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.timing(imageXTranslate, {
+          toValue: window.width * -5.5,
+          duration: 300,
+          delay: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      setImagePreviewTransform([
+        { scaleX: imageScale },
+        { scaleY: imageScale },
+        { translateX: imageXTranslate },
+        { translateY: imageYTranslate },
+      ]);
+    }, 100);
+  };
+  const onCameraClick = async () => {
     if (cameraMode === "picture") {
       flashBackground();
       camera.current.takePictureAsync({
-        onPictureSaved: (s) => {
-          setLastTakeImage(s.uri);
-          setTimeout(() => {
-            const imageScale = new Animated.Value(1);
-            const imageXTranslate = new Animated.Value(0);
-            const imageYTranslate = new Animated.Value(0);
-            Animated.sequence([
-              Animated.parallel([
-                Animated.timing(imageScale, {
-                  toValue: 0.2,
-                  duration: 600,
-                  useNativeDriver: true,
-                }),
-                Animated.timing(imageXTranslate, {
-                  toValue: window.width * -1.5,
-                  duration: 600,
-                  useNativeDriver: true,
-                }),
-                Animated.timing(imageYTranslate, {
-                  toValue: window.height * 1.3,
-                  duration: 600,
-                  useNativeDriver: true,
-                }),
-              ]),
-              Animated.timing(imageXTranslate, {
-                toValue: window.width * -5.5,
-                duration: 300,
-                delay: 500,
-                useNativeDriver: true,
-              }),
-            ]).start();
-            setImagePreviewTransform([
-              { scaleX: imageScale },
-              { scaleY: imageScale },
-              { translateX: imageXTranslate },
-              { translateY: imageYTranslate },
-            ]);
-          }, 100);
+        onPictureSaved: (picture) => {
+          setLastTakeImage(picture.uri);
+          animatePictureTaken();
         },
       });
     } else if (cameraMode === "recording") {
@@ -188,7 +190,6 @@ const AppCamera = ({ navigation }) => {
         clearInterval(videoTimer.stop);
         setVideoTimer({
           ...videoTimer,
-          // show: false,
         });
       }
     } else {
