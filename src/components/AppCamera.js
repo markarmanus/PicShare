@@ -27,7 +27,7 @@ const AppCamera = ({ navigation }) => {
   const [cameraMode, setCameraMode] = useState("picture");
   const [aspectRatio, setAspectRatio] = useState("4:3");
   const [aspectRatios, setAspectRatios] = useState([]);
-  const [videoTimer, setVideoTimer] = useState();
+  const [videoTimer, setVideoTimer] = useState(null);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [currentActiveInTopBar, setCurrentActiveInTopBar] = useState(undefined);
   const [imagePreviewTransform, setImagePreviewTransform] = useState([]);
@@ -186,7 +186,10 @@ const AppCamera = ({ navigation }) => {
       setCameraMode("video");
       if (videoTimer) {
         clearInterval(videoTimer.stop);
-        setVideoTimer({});
+        setVideoTimer({
+          ...videoTimer,
+          // show: false,
+        });
       }
     } else {
       setMainContext({
@@ -204,6 +207,7 @@ const AppCamera = ({ navigation }) => {
   const startVideoTimer = () => {
     const stop = setInterval(() => {
       setVideoTimer((oldTimer) => {
+        console.log("HI");
         if (oldTimer) {
           const oldTimeInt = {
             hour: parseInt(oldTimer.hour),
@@ -387,6 +391,7 @@ const AppCamera = ({ navigation }) => {
               containerStyle={styles.iconContainer}
               iconStyle={styles.icon}
               containerKey={Math.random()}
+              key={Math.random()}
               tintColor={"white"}
               size={24}
               color={"white"}
@@ -428,7 +433,7 @@ const AppCamera = ({ navigation }) => {
         {lastTakenImage ? (
           <Animated.View
             style={[
-              style.lastTakenImageContainer,
+              styles.lastTakenImageContainer,
               {
                 height: window.width * heightRatio,
                 transform: imagePreviewTransform,
@@ -436,7 +441,7 @@ const AppCamera = ({ navigation }) => {
             ]}
           >
             <Image
-              style={style.lastTakenImage}
+              style={styles.lastTakenImage}
               resizeMethod="resize"
               resizeMode="center"
               source={{ uri: lastTakenImage }}
@@ -444,7 +449,7 @@ const AppCamera = ({ navigation }) => {
           </Animated.View>
         ) : null}
         {videoTimer?.show ? (
-          <View style={style.timerContainer}>
+          <View style={styles.timerContainer}>
             <Text
               style={{ color: "white" }}
             >{`${videoTimer.hour}:${videoTimer.minute}:${videoTimer.second}`}</Text>

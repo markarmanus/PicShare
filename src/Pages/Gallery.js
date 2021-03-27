@@ -165,12 +165,10 @@ class Gallery extends React.Component {
           {this.state.albums.map((album, index) => {
             return (
               <Animated.View
+                key={index}
                 style={[styles.albumContainer, { width: this.state.widths }]}
               >
-                <TouchableOpacity
-                  key={index}
-                  style={{ width: "100%", height: "100%" }}
-                >
+                <TouchableOpacity style={{ width: "100%", height: "100%" }}>
                   <ImageBackground
                     source={{ uri: album.thumbnail }}
                     style={styles.albumThumbnail}

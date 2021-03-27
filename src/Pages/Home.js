@@ -29,7 +29,9 @@ class Home extends React.Component {
   setMainContext = (mainContext, callback) => {
     this.setState({ mainContext }, callback);
   };
+
   render() {
+    // this.onLogout();
     const Tab = createMaterialTopTabNavigator();
     const mainContextValue = {
       mainContext: this.state.mainContext,
