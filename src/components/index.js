@@ -6,4 +6,3 @@ export * from "./AppAlert";
 export * from "./AppCamera";
 export * from "./AppClickableIcon";
 export * from "./AppAlbum";
-export * from "./AppTextInputWithIcon";

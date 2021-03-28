@@ -6,6 +6,8 @@ import {
   MaterialIcons,
   FontAwesome5,
   MaterialCommunityIcons,
+  FontAwesome,
+  Entypo,
 } from "@expo/vector-icons";
 const ICON_COMPONENT_TYPES = {
   MaterilaIcon: "materialIcon",
@@ -13,6 +15,8 @@ const ICON_COMPONENT_TYPES = {
   Ionicons: "ionicons",
   MaterialCommunityIcons: "materialCommunityIcons",
   FontAwesome5: "fontAwesome5",
+  FontAwesome: "fontAwesome",
+  Entypo: "entypo",
 };
 
 const AppClickableIcon = ({
@@ -20,6 +24,7 @@ const AppClickableIcon = ({
   containerStyle,
   disabled,
   onPress,
+  disabledStyle = true,
   type,
   containerKey,
   ...props
@@ -35,6 +40,10 @@ const AppClickableIcon = ({
         return <MaterialCommunityIcons {...props} />;
       case ICON_COMPONENT_TYPES.FontAwesome5:
         return <FontAwesome5 {...props} />;
+      case ICON_COMPONENT_TYPES.FontAwesome:
+        return <FontAwesome {...props} />;
+      case ICON_COMPONENT_TYPES.Entypo:
+        return <Entypo {...props} />;
       case ICON_COMPONENT_TYPES.Image:
       default:
         return (
@@ -54,7 +63,7 @@ const AppClickableIcon = ({
       key={containerKey}
       style={[
         styles.container,
-        { opacity: disabled ? 0.6 : 1 },
+        { opacity: disabled && disabledStyle ? 0.6 : 1 },
         containerStyle,
       ]}
     >
