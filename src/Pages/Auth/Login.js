@@ -6,7 +6,7 @@ import amplifyApi from "../../API/AmplifyApi";
 import { AppForm, AppAlert } from "../../components";
 import UserContext from "../../contexts/user";
 import IMAGES from "../../../images";
-import AMPLIFY_ERRORS from "../../constants/AmplifyErrors";
+import { AMPLIFY_ERRORS } from "../../constants/";
 import COLORS from "../../config/Colors";
 import { Toast } from "../../helpers/nativeImports";
 

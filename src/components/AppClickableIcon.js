@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {
   Ionicons,
@@ -56,25 +56,31 @@ const AppClickableIcon = ({
         );
     }
   };
-  return (
+  const finalContainerStyle = [
+    styles.container,
+    { opacity: onPress && disabled ? 0.6 : 1 },
+    containerStyle,
+  ];
+  return onPress !== undefined ? (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
       key={containerKey}
-      style={[
-        styles.container,
-        { opacity: disabled && disabledStyle ? 0.6 : 1 },
-        containerStyle,
-      ]}
+      style={finalContainerStyle}
     >
       {getProperComponent()}
     </TouchableOpacity>
+  ) : (
+    <View style={finalContainerStyle} key={containerKey}>
+      {getProperComponent()}
+    </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     width: "100%",
     justifyContent: "center",
+    alignItems: "center",
     alignContent: "center",
     height: 30,
     marginVertical: 15,

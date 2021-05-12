@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { AppForm } from "../../components";
 import UserContext from "../../contexts/user";
 import IMAGES from "../../../images";
-import AMPLIFY_ERRORS from "../../constants/AmplifyErrors";
+import { AMPLIFY_ERRORS } from "../../constants/";
 import COLORS from "../../config/Colors";
 import { Toast } from "../../helpers/nativeImports";
 

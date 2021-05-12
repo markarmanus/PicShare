@@ -9,6 +9,7 @@ import { Welcome, Signup, Login, ValidateEmail } from "./src/Pages/Auth";
 import amplifyApi from "./src/API/AmplifyApi";
 import UserContext from "./src/contexts/user";
 import transformers from "./src/helpers/transformers";
+import { Platform, UIManager } from "react-native";
 
 Amplify.configure(awsconfig);
 
@@ -31,6 +32,13 @@ export default function App() {
     await amplifyApi.checkIfLoggedIn(onSuccess, onFail);
   };
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }
+  }, []);
   useEffect(() => {
     if (!userAuthenticated || user === undefined) checkIfLoggedIn();
   }, [loading, user]);

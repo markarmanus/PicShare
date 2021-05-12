@@ -3,4 +3,4 @@ const AMPLIFY_ERRORS = {
   USER_NOT_AUTHORIZED: "NotAuthorizedException",
   EMAIL_EXISTS: "UsernameExistsException",
 };
-export default AMPLIFY_ERRORS;
+export { AMPLIFY_ERRORS };
