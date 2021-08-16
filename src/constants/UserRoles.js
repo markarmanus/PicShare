@@ -1,6 +1,6 @@
 const USER_ROLES = {
-  UPLOADER: 10,
-  VIEWER: 5,
-  OWNER: 0,
+  VIEWER: 3,
+  UPLOADER: 2,
+  OWNER: 1,
 };
 export { USER_ROLES };
