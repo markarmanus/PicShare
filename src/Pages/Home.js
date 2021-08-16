@@ -31,7 +31,6 @@ class Home extends React.Component {
   };
 
   render() {
-    // this.onLogout();
     const Tab = createMaterialTopTabNavigator();
     const mainContextValue = {
       mainContext: this.state.mainContext,
@@ -51,7 +50,7 @@ class Home extends React.Component {
         >
           <Tab.Screen
             name="Gallery"
-            component={Gallery}
+            children={() => < Gallery  {...this.props} /> }
             options={{
               image: IMAGES.GALLERY,
               imageColor: COLORS.default.mainColor,
@@ -59,8 +58,8 @@ class Home extends React.Component {
             }}
           />
           <Tab.Screen
-            name="Camera"
-            component={Camera}
+            name="Camera"  
+            children={() => < Camera  {...this.props} /> }
             options={{
               image: this.state.mainContext.cameraIcon,
               imageSize: this.state.mainContext.cameraIconSize,
@@ -70,7 +69,7 @@ class Home extends React.Component {
           />
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            children={() => <Profile {...this.props} onLogout={this.onLogout}/> }
             options={{
               image: IMAGES.USER,
               imageSize: 30,

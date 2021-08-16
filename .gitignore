@@ -1,3 +1,7 @@
+
+#vscode
+.vscode/.react/**
+
 node_modules/**/*
 .expo/*
 npm-debug.*

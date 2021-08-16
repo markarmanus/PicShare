@@ -1,14 +1,12 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import COLORS from "../config/Colors";
 import {AppButton} from "../components"
-import amplifyApi from "../API/AmplifyApi";
 function Profile(props) {
   return (
     <View style={styles.container}>
         <AppButton
           onPress={() => {
-            amplifyApi.singOut()
+            props.onLogout()
           }}
           title={"Logout"}
         />      
