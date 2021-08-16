@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
   container: {
     minWidth: 200,
     minHeight: 100,
+    height: 300,
+    width: 300,
   },
 });
 export { AppAlert };
