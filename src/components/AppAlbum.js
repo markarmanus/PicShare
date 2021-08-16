@@ -1,20 +1,16 @@
 import React from "react";
 import {
   StyleSheet,
-  TextInput,
   View,
-  Text,
   ImageBackground,
 } from "react-native";
-import COLORS from "../config/Colors";
-import IMAGES from "../../images";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const AppAlbum = (props) => {
+const AppAlbum = ({onPress,thumbnail}) => {
   return (
     <View>
-      <TouchableOpacity onPress={props.onPress} style={styles.container}>
-        <ImageBackground style={styles.thumbnail} source={props.thumbnail} />
+      <TouchableOpacity onPress={onPress} style={styles.container}>
+        <ImageBackground style={styles.thumbnail} source={thumbnail} />
       </TouchableOpacity>
     </View>
   );

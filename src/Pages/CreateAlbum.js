@@ -45,7 +45,8 @@ class CreateAlbum extends React.Component {
     search: null,
     searchResults: [],
     selectedUsers: {},
-    containerHeight: new Animated.Value(window.height * 0.2),
+    containerHeight: window.height * 0.2,
+
     errors: {},
   };
 
@@ -98,12 +99,14 @@ class CreateAlbum extends React.Component {
   }
 
   componentDidMount() {
-    Animated.timing(this.state.containerHeight, {
-      toValue: window.height * 0.88,
-      duration: 1000,
-      easing: Easing.in(Easing.elastic(1.1)),
-      useNativeDriver: false,
-    }).start();
+    setTimeout(() => {
+      const spring = {...LayoutAnimation.Presets.spring}
+      spring.duration = 1500
+      LayoutAnimation.configureNext(spring);
+      this.setState({
+      containerHeight: window.height * 0.88
+      })
+    }, 100)
   }
 
   changeUserRole(user, role) {
@@ -286,7 +289,7 @@ class CreateAlbum extends React.Component {
     const placeHolderColor = "rgba(255,255,255,0.7)";
     return (
       <View style={styles.container}>
-        <Animated.View
+        <View
           style={[
             styles.inputsContainer,
             { height: this.state.containerHeight },
@@ -350,7 +353,7 @@ class CreateAlbum extends React.Component {
               containerStyle={styles.buttonContainer}
             />
           </View>
-        </Animated.View>
+        </View>
       </View>
     );
   }
