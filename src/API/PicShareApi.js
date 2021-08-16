@@ -96,10 +96,25 @@ const createAlbum = async (albumData, onSuccess, onFail) => {
     if (onFail) onFail(e);
   }
 };
+
+const getUserAlbums = async (onSuccess, onFail) => {
+  try {
+    const headers = await getDefaultHeaders();
+    await axios
+      .get(`${API_CONFIG.URL}/user/albums`, { headers })
+      .then((res) => {
+        if (onSuccess) onSuccess(res);
+      });
+  } catch (e) {
+    console.log(e);
+    if (onFail) onFail(e);
+  }
+};
 const picShareApi = {
   verifyUser,
   searchUsers,
   createAlbum,
+  getUserAlbums,
   uploadPicture,
   getAlbum,
 };
