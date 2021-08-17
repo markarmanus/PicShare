@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Platform } from "react-native";
 import amplifyApi from "../../API/AmplifyApi";
 import { StackActions } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { AppForm } from "../../components";
+import { AppForm, FIELD_TYPES } from "../../components";
 import UserContext from "../../contexts/user";
 import IMAGES from "../../../images";
 import { AMPLIFY_ERRORS } from "../../constants/";
@@ -29,7 +29,7 @@ function Signup(props) {
       if (error.name === AMPLIFY_ERRORS.EMAIL_EXISTS) {
         Toast.show("Email Already Exists!");
       } else {
-        Toast.show("Could Not Login, SomeThing Went Wrong!");
+        Toast.show("Could Not Sign Up, SomeThing Went Wrong!");
       }
     };
     await amplifyApi.singUp(
@@ -52,15 +52,32 @@ function Signup(props) {
         <Image resizeMode="contain" style={styles.logo} source={IMAGES.LOGO} />
         <View style={styles.innerContainer}>
           <AppForm
-            inputsToRender={{
-              email: true,
-              fullName: true,
-              password: true,
+            fieldsProps={{
+              email: {
+                validate: true,
+                validationRequired: true,
+                initialValue: user?.email,
+                placeHolder: "Email",
+                id: "email",
+                type: FIELD_TYPES.EMAIL,
+              },
+              password: {
+                validate: true,
+                validationRequired: true,
+                liveValidation: true,
+                placeHolder: "Password",
+                id: "password",
+                secureText: true,
+                type: FIELD_TYPES.PASSWORD,
+              },
+              fullName: {
+                placeHolder: "Full Name",
+                id: "fullName",
+                initialValue: user?.fullName,
+                type: FIELD_TYPES.TEXT,
+              },
             }}
-            defaultValues={{
-              email: user?.email,
-              fullName: user?.fullName,
-            }}
+            noEmptyValues={true}
             isLoading={loading}
             submitButtonText="Create Account"
             onSubmit={singUp}

@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Platform } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import amplifyApi from "../../API/AmplifyApi";
-import { AppForm, AppAlert } from "../../components";
+import { AppForm, FIELD_TYPES, AppAlert } from "../../components";
 import UserContext from "../../contexts/user";
 import IMAGES from "../../../images";
 import { AMPLIFY_ERRORS } from "../../constants/";
@@ -17,7 +17,6 @@ function Login(props) {
 
   const onLogin = async (formData) => {
     setLoading(true);
-
     const { email, password } = formData;
     const onLoginSuccess = () => {
       props.navigation.popToTop();
@@ -57,15 +56,23 @@ function Login(props) {
         <Image resizeMode="contain" style={styles.logo} source={IMAGES.LOGO} />
         <View style={styles.innerContainer}>
           <AppForm
-            inputsToRender={{
-              email: true,
-              fullName: false,
-              password: true,
+            fieldsProps={{
+              email: {
+                validate: true,
+                validationRequired: true,
+                initialValue: user?.email,
+                placeHolder: "Email",
+                id: "email",
+                type: FIELD_TYPES.EMAIL,
+              },
+              password: {
+                placeHolder: "Password",
+                id: "password",
+                secureText: true,
+                type: FIELD_TYPES.PASSWORD,
+              },
             }}
-            validateLoginOnly={true}
-            defaultValues={{
-              email: user?.email,
-            }}
+            noEmptyValues={true}
             isLoading={loading}
             submitButtonText="Login"
             onSubmit={onLogin}

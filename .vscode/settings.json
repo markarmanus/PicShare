@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "editor.acceptSuggestionOnCommitCharacter": false,
   "files.exclude": {
     "amplify/.config": true,
     "amplify/**/*-parameters.json": true,
@@ -8,5 +9,6 @@
     "amplify/#current-cloud-backend": true,
     "amplify/backend/amplify-meta.json": true,
     "amplify/backend/awscloudformation": true
-  }
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
