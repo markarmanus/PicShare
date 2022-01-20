@@ -7,8 +7,9 @@ import {
   ImageBackground,
   TouchableOpacity,
   Dimensions,
-  Animated,
+  Image,
   ScrollView,
+  LayoutAnimation,
 } from "react-native";
 import {
   AppButton,
@@ -21,6 +22,7 @@ import COLORS from "../config/Colors";
 import { AppAlbum } from "../components";
 import IMAGES from "../../images";
 import { BlurView } from "expo-blur";
+import picShareApi from "../API/PicShareApi";
 
 const window = Dimensions.get("screen");
 const gridMargin = 5;
@@ -32,7 +34,7 @@ class Gallery extends React.Component {
     albums: [],
     loading: true,
     gridMode: "grid",
-    widths: new Animated.Value(albumSquareSize),
+    width: albumSquareSize
   };
 
   onLogout = () => {
@@ -43,25 +45,17 @@ class Gallery extends React.Component {
   };
   changeGridView = () => {
     if (this.state.gridMode === "grid") {
-      Animated.timing(this.state.widths, {
-        toValue: window.width * 0.9,
-        duration: 600,
-        useNativeDriver: false,
-      }).start(() => {
-        this.setState({
-          gridMode: "wide",
-        });
-      });
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      this.setState({
+        gridMode: 'wide',
+        width: window.width * 0.9
+      })
     } else {
-      Animated.timing(this.state.widths, {
-        toValue: albumSquareSize,
-        duration: 600,
-        useNativeDriver: false,
-      }).start(() => {
-        this.setState({
-          gridMode: "grid",
-        });
-      });
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      this.setState({
+        gridMode: 'grid',
+        width: albumSquareSize
+      })
     }
   };
   getUserAlbums = async () => {
@@ -141,14 +135,15 @@ class Gallery extends React.Component {
           />
         </View>
         <ScrollView contentContainerStyle={styles.albumsContainer}>
-          <Animated.View
-            style={[styles.albumContainer, { width: this.state.widths }]}
+          <View
+            style={[styles.albumContainer, { width: this.state.width }]}
           >
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate("CreateAlbum")}
               style={{
                 justifyContent: "center",
                 alignItems: "center",
+                alignContent: "center",
                 backgroundColor: COLORS.default.accent,
                 width: "100%",
                 height: "100%",
@@ -158,17 +153,16 @@ class Gallery extends React.Component {
                 type={ICON_COMPONENT_TYPES.FontAwesome5}
                 name="plus"
                 size={35}
-                disabled={true}
                 color="white"
               />
             </TouchableOpacity>
-          </Animated.View>
+          </View>
 
           {this.state.albums.map((album, index) => {
             return (
-              <Animated.View
+              <View
                 key={index}
-                style={[styles.albumContainer, { width: this.state.widths }]}
+                style={[styles.albumContainer, { width: this.state.width }]}
               >
                 <TouchableOpacity style={{ width: "100%", height: "100%" }}>
                   <ImageBackground
@@ -180,9 +174,28 @@ class Gallery extends React.Component {
                     <Text style={styles.albumLocation}>{"United States "}</Text>
                   </View>
                 </TouchableOpacity>
-              </Animated.View>
+              </View>
             );
           })}
+          <Image
+            style={{
+              width: 100,
+              height: 100,
+            }}
+            source={{ uri: this.state.imageUrl }}
+          />
+          {/* <AppButton
+            title="HI"
+            onPress={() => {
+              console.log(this.state.imageUrl);
+              picShareApi.getUserAlbums((res) => {
+                console.log(res.data);
+                this.setState({
+                  imageUrl: res.data[0],
+                });
+              });
+            }}
+          /> */}
         </ScrollView>
 
         {this.state.loading ? (
